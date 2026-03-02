@@ -1,0 +1,61 @@
+{
+  "name": "n8n Self-Hosted + Dev Tools",
+
+  // أساس قوي: يثبت Docker + Docker Compose داخل Codespace
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true,
+      "dockerComposeVersion": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers-contrib/features/docker-compose:2": {}
+  },
+
+  // صورة أساسية خفيفة + Node.js (بديل: mcr.microsoft.com/devcontainers/base:ubuntu)
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+
+  // إعدادات VS Code داخل Codespace
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "n8n-io.n8n-nodes",           // إضافة رسمية إذا وجدت (أو ابحث عن n8n extensions)
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "GitHub.copilot",
+        "ms-vscode-remote.remote-containers"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.autoSave": "afterDelay"
+      }
+    }
+  },
+
+  // أوامر تُنفذ بعد إنشاء الـ container
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y curl git jq",
+
+  // أمر يُنفذ بعد كل rebuild أو إعادة تشغيل (اختياري)
+  "postStartCommand": "echo 'Codespace ready. Run: docker compose up -d'",
+
+  // المنافذ التي تريد Codespaces يعرضها تلقائيًا
+  "portsAttributes": {
+    "5678": {
+      "label": "n8n UI",
+      "onAutoForward": "openPreview"
+    }
+  },
+
+  // متغيرات بيئية عامة (يمكن override في docker-compose)
+  "remoteEnv": {
+    "TZ": "Africa/Cairo",
+    "N8N_PROTOCOL": "https",
+    "N8N_HOST": "0.0.0.0",
+    "N8N_PORT": "5678"
+  },
+
+  // يجعل Codespaces ينتظر حتى ينتهي postCreateCommand
+  "waitFor": "postCreateCommand"
+}
